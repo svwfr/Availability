@@ -1,0 +1,10 @@
+*.app
+*.rest
+*.g.xlf
+.alpackages
+.snapshots
+.alcache
+.altemplates
+**/.vscode/*.json
+!**/.vscode/settings.json
+!**/.vscode/ruleset.json

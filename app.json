@@ -1,0 +1,46 @@
+{
+  "id": "14b253e8-abfb-4450-8d4f-3520d784b1fa",
+  "name": "Byx Availability",
+  "publisher": "Byx Digital AS",
+  "version": "1.0.9.0",
+  "brief": "When release sales order, then notify if not available stock",
+  "description": "When a sales order is released, the system will attempt to match the demand with an entry in the reservation table. If it is unable to do so, a warning will be issued, suggesting an alternative shipment date.",
+  "privacyStatement": "https://www.byx.digital/",
+  "EULA": "https://www.byx.digital/",
+  "help": "https://www.byx.digital/",
+  "url": "https://www.byx.digital/",
+  "logo": "./Media/ByxDigitalLogo.png",
+  "dependencies": [
+    {
+      "id": "28d6876f-a46f-4dfe-8e17-34d60bdaf4d5",
+      "publisher": "Abakion",
+      "name": "Intercompany",
+      "version": "25.2.0.0"
+    },
+    {
+      "id": "ce33b62f-5007-4314-9a1b-8db8127f7e09",
+      "publisher": "BYX Digital AS",
+      "name": "Byx Integration Framework",
+      "version": "1.2.1.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "1.0.0.0",
+  "application": "25.0.0.0",
+  "idRanges": [
+    {
+      "from": 50600,
+      "to": 50649
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "runtime": "14.2",
+  "target": "Cloud",
+  "features": [
+    "NoImplicitWith", "TranslationFile"
+  ]
+}

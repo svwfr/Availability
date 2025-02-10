@@ -1,0 +1,11 @@
+{
+    "al.ruleSetPath": ".vscode\\ruleset.json",
+    "al.enableCodeAnalysis": false,
+    "al.codeAnalyzers": ["${CodeCop}", "${UICop}", "${PerTenantExtensionCop}"],
+    "CRS.ObjectNamePrefix": "AVLB",
+    "CRS.FileNamePattern": "<ObjectNameShort>.<ObjectTypeShortPascalCase>.al",
+    "CRS.FileNamePatternExtensions": "<ObjectNameShort>.<ObjectTypeShortPascalCase>.al",
+    "CRS.RemovePrefixFromFilename": true,
+    "xliffSync.baseFile": "NC Availability.g.xlf",
+    "al.rootNamespace": "Byx.Availability"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Get Inspired",
+    "description": "",
+    "rules": [
+        {
+            "id": "AA0072",
+            "action": "none",
+            "justification": "The name of httpResponse is not valid. The name of variables and parameters must be suffixed with the type or object name."
+        },
+        {
+            "id": "AA0215",
+            "action": "none",
+            "justification": "The file StoreList.PageExt.al has an incorrect name. The valid name is POSFRStoreList.PageExt.al."
+        },
+        {
+            "id": "AA0232",
+            "action": "none",
+            "justification": "SWIFT-key false waring"
+        }
+    ]
+}
