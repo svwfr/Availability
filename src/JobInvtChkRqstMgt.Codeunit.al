@@ -135,13 +135,10 @@ codeunit 50612 "AVLB Job InvtChkRqst Mgt" implements "IFW Job Handler"
 
     local procedure IsWebshopOrder(var IfwLog: Record "IFW Log") IsWebshopOrder: Boolean
     var
-        SalesHeader: Record "Sales Header";
         SingleInstanceMgt: Codeunit "AVLB Single Instance Mgt";
         IsWebShopMsg: Label 'The Sales order is a web order, inventory check has been skipped';
     begin
         IsWebshopOrder := false;
-        if not SalesHeader.GetBySystemId(IfwLog."Source SystemId") then
-            exit(false);
         OnCheckIsWebshopOrder(IfwLog, IsWebshopOrder);
         if IsWebshopOrder then begin
             if not SingleInstanceMgt.GetSkipInvCheckForWebOrders() then
