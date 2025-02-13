@@ -121,12 +121,13 @@ codeunit 50622 "AVLB Auto Match Transf Line"
         else begin
             SupplyReservEntry.SetFilter("Source Prod. Order Line", SupplyReservEntry.GetFilter("Source Ref. No."));
             SupplyReservEntry.SetRange("Source Ref. No.");
-            if SupplyReservEntry.FindSet() then
+            if SupplyReservEntry.FindSet() then begin
                 repeat
                     MatchDemand(SupplyReservEntry, MainLocation);
                 until SupplyReservEntry.Next() = 0;
-            SkipDefaultAutoMatch := true;
-            TrimReservMgt.DefragPositiveSurplus(SupplyReservEntry."Item No.", SupplyReservEntry."Variant Code");
+                SkipDefaultAutoMatch := true;
+                TrimReservMgt.DefragPositiveSurplus(SupplyReservEntry."Item No.", SupplyReservEntry."Variant Code");
+            end;
         end;
     end;
 
