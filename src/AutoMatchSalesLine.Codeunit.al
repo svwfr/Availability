@@ -168,6 +168,7 @@ codeunit 50602 "AVLB Auto Match Sales Line"
         TrackedReservEntry: Record "Reservation Entry";
     begin
         TrackedReservEntry := ReservEntry;
+        TrackedReservEntry."Quantity (Base)" := 0;
         TrackedReservEntry.SetPointerFilter();
         TrackedReservEntry.SetRange(Positive, false);
         TrackedReservEntry.SetRange("Reservation Status", "Reservation Status"::Tracking);
