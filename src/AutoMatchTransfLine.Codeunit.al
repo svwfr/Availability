@@ -4,6 +4,7 @@ using Microsoft.Inventory.Tracking;
 using Microsoft.Inventory.Item;
 using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Transfer;
+using Microsoft.Inventory.Ledger;
 
 codeunit 50622 "AVLB Auto Match Transf Line"
 {
@@ -28,7 +29,7 @@ codeunit 50622 "AVLB Auto Match Transf Line"
         if ReservationEntry."Location Code" <> MainLocation then
             exit;
         if SetTracked2Surplus(ReservationEntry, NewDate) then
-            MoveTrackedDemand(ReservationEntry,true);
+            MoveTrackedDemand(ReservationEntry, true);
         IsHandled := true;
     end;
 
@@ -130,7 +131,7 @@ codeunit 50622 "AVLB Auto Match Transf Line"
         SplittTransfLnEntry.SetBaseLoadFields();
         if SplittTransfLnEntry.FindSet() then
             repeat
-                MoveTrackedDemand(SplittTransfLnEntry,false);
+                MoveTrackedDemand(SplittTransfLnEntry, false);
             until SplittTransfLnEntry.Next() = 0;
     end;
 
@@ -143,6 +144,7 @@ codeunit 50622 "AVLB Auto Match Transf Line"
         TransLn: Record "Transfer Line";
         TrimReservMgt: Codeunit "AVLB Trim Reservation Mgt";
         QtyToCreate: Decimal;
+        QtyToTrack: Decimal;
     begin
         if ReservEntry."Source Type" <> Database::"Transfer Line" then
             exit;
@@ -161,7 +163,9 @@ codeunit 50622 "AVLB Auto Match Transf Line"
         SupplyReservEntry.SetBaseLoadFields();
         if SupplyReservEntry.FindSet() then
             repeat
-                MatchDemand(SupplyReservEntry, MainLocation);
+                QtyToTrack := MatchDemand(SupplyReservEntry, MainLocation);
+                if QtyToTrack > 0 then
+                    Reprioritize(SupplyReservEntry, MainLocation, QtyToTrack);
                 SkipDefaultAutoMatch := true
             until SupplyReservEntry.Next() = 0;
 
@@ -183,15 +187,14 @@ codeunit 50622 "AVLB Auto Match Transf Line"
         TrimReservMgt.DefragPositiveSurplus(SupplyReservEntry."Item No.", SupplyReservEntry."Variant Code");
     end;
 
-    local procedure MatchDemand(SupplyReservEntry: Record "Reservation Entry"; Location: Code[10])
+    local procedure MatchDemand(SupplyReservEntry: Record "Reservation Entry"; MainLocation: Code[10]) QtyToTrack: Decimal
     var
         DemandEntry: Record "Reservation Entry";
-        QtyToTrack: Decimal;
     begin
         QtyToTrack := SupplyReservEntry."Quantity (Base)";
         DemandEntry.SetRange(Positive, false);
         DemandEntry.SetRange("Reservation Status", "Reservation Status"::Surplus);
-        DemandEntry.SetRange("Location Code", Location);
+        DemandEntry.SetRange("Location Code", MainLocation);
         DemandEntry.SetRange("Item No.", SupplyReservEntry."Item No.");
         DemandEntry.SetRange("Variant Code", SupplyReservEntry."Variant Code");
         DemandEntry.SetFilter("Shipment Date", '%1..', SupplyReservEntry."Expected Receipt Date");
@@ -281,6 +284,125 @@ codeunit 50622 "AVLB Auto Match Transf Line"
         MatchReservEntry."Creation Date" := Today;
         MatchReservEntry.Insert();
         RestQty := 0;
+    end;
+
+    local procedure Reprioritize(SupplyReservEntry: Record "Reservation Entry"; MainLocation: Code[10]; QtyToReprioritize: Decimal)
+    var
+        DemandEntry: Record "Reservation Entry";
+        MatchedEntry: Record "Reservation Entry";
+    begin
+        DemandEntry.SetRange(Positive, false);
+        DemandEntry.SetRange("Reservation Status", "Reservation Status"::Tracking);
+        DemandEntry.SetRange("Location Code", MainLocation);
+        DemandEntry.SetRange("Item No.", SupplyReservEntry."Item No.");
+        DemandEntry.SetRange("Variant Code", SupplyReservEntry."Variant Code");
+        DemandEntry.SetFilter("Shipment Date", '%1..', SupplyReservEntry."Expected Receipt Date");
+        DemandEntry.SetBaseLoadFields();
+        if DemandEntry.FindSet() then
+            repeat
+                MatchedEntry.SetRange("Entry No.", DemandEntry."Entry No.");
+                MatchedEntry.SetRange(Positive, true);
+                MatchedEntry.SetRange("Source Type", Database::"Item Ledger Entry");
+                if MatchedEntry.FindFirst() then begin
+                    case true of
+                        QtyToReprioritize = MatchedEntry."Quantity (Base)":
+                            QtyToReprioritize := FullyReprioritizeMatch(DemandEntry, SupplyReservEntry, MatchedEntry);
+                        QtyToReprioritize > MatchedEntry."Quantity (Base)":
+                            QtyToReprioritize := ReprioritizeOverSupplySurplus(DemandEntry, SupplyReservEntry, MatchedEntry, QtyToReprioritize);
+                        QtyToReprioritize < MatchedEntry."Quantity (Base)":
+                            QtyToReprioritize := ReprioritizeUnderSupplySurplus(DemandEntry, SupplyReservEntry, MatchedEntry, QtyToReprioritize);
+                    end;
+                end;
+            until (DemandEntry.Next() = 0) or (QtyToReprioritize = 0);
+    end;
+
+    local procedure FullyReprioritizeMatch(DemandEntry: Record "Reservation Entry";
+SupplyEntry: Record "Reservation Entry";
+ReprioritizeEntry: Record "Reservation Entry") RestQty: Decimal
+    var
+        NewReservEntry: Record "Reservation Entry";
+    begin
+        SupplyEntry."Reservation Status" := "Reservation Status"::Tracking;
+        SupplyEntry."Shipment Date" := DemandEntry."Shipment Date";
+        SupplyEntry.Modify();
+
+        NewReservEntry := DemandEntry;
+        if DemandEntry."Entry No." <> 0 then
+            DemandEntry.Delete();
+        NewReservEntry."Entry No." := SupplyEntry."Entry No.";
+        NewReservEntry."Reservation Status" := "Reservation Status"::Tracking;
+        NewReservEntry."Expected Receipt Date" := SupplyEntry."Expected Receipt Date";
+        NewReservEntry."Creation Date" := Today;
+        NewReservEntry.Insert();
+
+        ReprioritizeEntry."Reservation Status" := "Reservation Status"::Surplus;
+        ReprioritizeEntry."Shipment Date" := 0D;
+        ReprioritizeEntry.Modify();
+        RestQty := 0;
+    end;
+
+    local procedure ReprioritizeOverSupplySurplus(DemandEntry: Record "Reservation Entry"; var SupplyReservEntry: Record "Reservation Entry"; ReprioritizeEntry: Record "Reservation Entry"; QtyToReprioritize: Decimal) RestSupplySurplusQty: Decimal
+    var
+        NewDemandEntry: Record "Reservation Entry";
+        NewSurpluEntry: Record "Reservation Entry";
+    begin
+        RestSupplySurplusQty := QtyToReprioritize - ReprioritizeEntry."Quantity (Base)";
+        NewSurpluEntry.TransferFields(SupplyReservEntry, false);
+        NewSurpluEntry."Entry No." := 0;
+        NewSurpluEntry.Positive := true;
+        NewSurpluEntry."Reservation Status" := "Reservation Status"::Surplus;
+        NewSurpluEntry.Validate("Quantity (Base)", RestSupplySurplusQty);
+        NewSurpluEntry."Creation Date" := Today;
+        NewSurpluEntry.Insert();
+
+        SupplyReservEntry."Reservation Status" := "Reservation Status"::Tracking;
+        SupplyReservEntry."Shipment Date" := DemandEntry."Shipment Date";
+        SupplyReservEntry.Validate("Quantity (Base)", ReprioritizeEntry."Quantity (Base)");
+        SupplyReservEntry.Modify();
+
+        NewDemandEntry := DemandEntry;
+        NewDemandEntry."Entry No." := SupplyReservEntry."Entry No.";
+        NewDemandEntry.Positive := false;
+        NewDemandEntry."Reservation Status" := "Reservation Status"::Tracking;
+        NewDemandEntry."Expected Receipt Date" := SupplyReservEntry."Expected Receipt Date";
+        NewDemandEntry."Creation Date" := Today;
+        NewDemandEntry.Insert();
+        DemandEntry.Delete();
+
+        ReprioritizeEntry."Reservation Status" := "Reservation Status"::Surplus;
+        ReprioritizeEntry."Shipment Date" := 0D;
+        ReprioritizeEntry.Modify();
+    end;
+
+    local procedure ReprioritizeUnderSupplySurplus(DemandEntry: Record "Reservation Entry"; var SupplyReservEntry: Record "Reservation Entry"; ReprioritizeEntry: Record "Reservation Entry"; QtyToReprioritize: Decimal) RestSupplySurplusQty: Decimal
+    var
+        NewDemandEntry: Record "Reservation Entry";
+    begin
+        // DemandEntry = 10 pcs
+        // ReprioritizeEntry = 10 pcs
+        // QtyToReprioritize = SupplyReservEntry = 8 pcs
+        // NewDemandEntry = 8 pcs
+        RestSupplySurplusQty := ReprioritizeEntry."Quantity (Base)" - QtyToReprioritize;
+
+        if SupplyReservEntry."Quantity (Base)" <> QtyToReprioritize then
+            Error('SupplyReservEntry og QtyToReprioritize er ikke like');
+        SupplyReservEntry."Reservation Status" := "Reservation Status"::Tracking;
+        SupplyReservEntry."Shipment Date" := DemandEntry."Shipment Date";
+        SupplyReservEntry.Modify();
+
+        NewDemandEntry."Entry No." := SupplyReservEntry."Entry No.";
+        NewDemandEntry.Positive := false;
+        NewDemandEntry."Reservation Status" := "Reservation Status"::Tracking;
+        NewDemandEntry.Validate("Quantity (Base)", -1 * SupplyReservEntry."Qty. to Handle (Base)");
+        NewDemandEntry."Expected Receipt Date" := SupplyReservEntry."Expected Receipt Date";
+        NewDemandEntry."Creation Date" := Today;
+        NewDemandEntry.Insert();
+
+        DemandEntry.Validate("Quantity (Base)", -1 * RestSupplySurplusQty);
+        DemandEntry.Modify();
+
+        ReprioritizeEntry.Validate("Quantity (Base)", RestSupplySurplusQty);
+        ReprioritizeEntry.Modify();
     end;
 
     local procedure SetMainLocation()

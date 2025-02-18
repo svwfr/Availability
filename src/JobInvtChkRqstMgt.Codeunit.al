@@ -84,9 +84,9 @@ codeunit 50612 "AVLB Job InvtChkRqst Mgt" implements "IFW Job Handler"
         RecRef.GetTable(SalesHeader);
         RecRef.Reset();
         RecRef.SetRecFilter();
-        if ICSetup.Get() and (ICSetup."SCB IC Company Type" = Enum::"SCB IC Company Type"::"Sales Company") then
-            IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetICtxt(), false)
-        else
+        // if ICSetup.Get() and (ICSetup."SCB IC Company Type" = Enum::"SCB IC Company Type"::"Sales Company") then
+        //     IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetICtxt(), false)
+        // else
             IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetLocalTxt(), false);
 
         IfwLog.Get(CreatedNo);
@@ -106,9 +106,9 @@ codeunit 50612 "AVLB Job InvtChkRqst Mgt" implements "IFW Job Handler"
         RecRef.GetTable(PurchaseHdr);
         RecRef.Reset();
         RecRef.SetRecFilter();
-        if ICSetup.Get() and (ICSetup."SCB IC Company Type" = Enum::"SCB IC Company Type"::"Sales Company") then
-            IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetICtxt(), false)
-        else
+        // if ICSetup.Get() and (ICSetup."SCB IC Company Type" = Enum::"SCB IC Company Type"::"Sales Company") then
+        //     IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetICtxt(), false)
+        // else
             IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetLocalTxt(), false);
         IfwLog.Get(CreatedNo);
 
@@ -255,7 +255,7 @@ codeunit 50612 "AVLB Job InvtChkRqst Mgt" implements "IFW Job Handler"
         SalesLn.LoadFields("Line No.", "No.", "Outstanding Qty. (Base)", "Reserved Qty. (Base)", "Shipment Date", "Location Code");
         if not SalesLn.FindSet() then
             exit;
-        VendorOrderNo := SalesLn."SCB Vendor Order No."; //Wilfa Norway
+        // VendorOrderNo := SalesLn."SCB Vendor Order No."; //Wilfa Norway
         repeat
             if SalesLn.IsInventoriableItem() or SkipDueToDropShipment(SalesLn) then begin
                 JsonLine.Add('lineNo', SalesLn."Line No.");
@@ -326,7 +326,7 @@ codeunit 50612 "AVLB Job InvtChkRqst Mgt" implements "IFW Job Handler"
         if not SalesLn."Drop Shipment" then
             exit(false);
         PurchasingCode.SetRange(Code, SalesLn."Purchasing Code");
-        PurchasingCode.SetRange("SCB Intercompany", true);
+        // PurchasingCode.SetRange("SCB Intercompany", true);
         if PurchasingCode.IsEmpty then
             exit(true);
     end;

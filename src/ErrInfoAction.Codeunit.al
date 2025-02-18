@@ -228,22 +228,22 @@ codeunit 50604 "AVLB ErrorInfoAction"
         SalesHdr: Record "Sales Header";
         PurchHdr: Record "Purchase Header";
         GlobalICSetup: Record "IC Setup";
-        SCBICFunctions: Codeunit "SCB IC Functions";
+        // SCBICFunctions: Codeunit "SCB IC Functions";
     begin
-        GlobalICSetup.SetFilter("IC Partner Code", '<>%1', '');
-        if GlobalICSetup.IsEmpty then
-            exit;
-        GlobalICSetup.SetRange("SCB IC for Web Orders", false);
+        // GlobalICSetup.SetFilter("IC Partner Code", '<>%1', '');
+        // if GlobalICSetup.IsEmpty then
+        //     exit;
+        // GlobalICSetup.SetRange("SCB IC for Web Orders", false);
 
-        SalesHdr."SCB Manual Order" := GlobalICSetup.IsEmpty; //set to true if "for web orders"
-        case DocType of
-            SalesHdr.TableName:
-                if SalesHdr.Get(SalesHdr."Document Type"::Order, OrderNo) and (SalesHdr.Status = "Sales Document Status"::Released) then
-                    SCBICFunctions.SalesRelease(SalesHdr);
-            PurchHdr.TableName:
-                if PurchHdr.Get(PurchHdr."Document Type"::"Order", OrderNo) and (PurchHdr.Status = "Purchase Document Status"::Released) then
-                    SCBICFunctions.PurchRelease(PurchHdr);
-        end;
+        // SalesHdr."SCB Manual Order" := GlobalICSetup.IsEmpty; //set to true if "for web orders"
+        // case DocType of
+        //     SalesHdr.TableName:
+        //         if SalesHdr.Get(SalesHdr."Document Type"::Order, OrderNo) and (SalesHdr.Status = "Sales Document Status"::Released) then
+        //             SCBICFunctions.SalesRelease(SalesHdr);
+        //     PurchHdr.TableName:
+        //         if PurchHdr.Get(PurchHdr."Document Type"::"Order", OrderNo) and (PurchHdr.Status = "Purchase Document Status"::Released) then
+        //             SCBICFunctions.PurchRelease(PurchHdr);
+        // end;
     end;
 
     var
