@@ -23,8 +23,8 @@ codeunit 50613 "AVLB Job InvtChkRsps Mgt" implements "IFW Job Handler"
     procedure PrepareJob(var IfwRec: Record "IFW Integration"; var IfwLog: Record "IFW Log"; var IfwJob: Record "IFW Job"): Boolean
     begin
         ToolsMgt.RunWithJobQueue(IfwLog);
-        // if not ToolsMgt.RunWithJobQueue(IfwLog) then
-        //     IfwLog.RunLogEntry(true);
+        if not ToolsMgt.RunWithJobQueue(IfwLog) then
+            IfwLog.RunLogEntry(true);
         exit(true);
     end;
 

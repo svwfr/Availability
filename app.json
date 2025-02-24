@@ -12,6 +12,12 @@
   "logo": "./Media/ByxDigitalLogo.png",
   "dependencies": [
     {
+      "id": "28d6876f-a46f-4dfe-8e17-34d60bdaf4d5",
+      "publisher": "Abakion",
+      "name": "Intercompany",
+      "version": "25.2.0.0"
+    },
+    {
       "id": "ce33b62f-5007-4314-9a1b-8db8127f7e09",
       "publisher": "BYX Digital AS",
       "name": "Byx Integration Framework",

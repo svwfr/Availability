@@ -378,10 +378,6 @@ ReprioritizeEntry: Record "Reservation Entry") RestQty: Decimal
     var
         NewDemandEntry: Record "Reservation Entry";
     begin
-        // DemandEntry = 10 pcs
-        // ReprioritizeEntry = 10 pcs
-        // QtyToReprioritize = SupplyReservEntry = 8 pcs
-        // NewDemandEntry = 8 pcs
         RestSupplySurplusQty := ReprioritizeEntry."Quantity (Base)" - QtyToReprioritize;
 
         if SupplyReservEntry."Quantity (Base)" <> QtyToReprioritize then
@@ -390,6 +386,7 @@ ReprioritizeEntry: Record "Reservation Entry") RestQty: Decimal
         SupplyReservEntry."Shipment Date" := DemandEntry."Shipment Date";
         SupplyReservEntry.Modify();
 
+        NewDemandEntry := DemandEntry;
         NewDemandEntry."Entry No." := SupplyReservEntry."Entry No.";
         NewDemandEntry.Positive := false;
         NewDemandEntry."Reservation Status" := "Reservation Status"::Tracking;
@@ -403,6 +400,7 @@ ReprioritizeEntry: Record "Reservation Entry") RestQty: Decimal
 
         ReprioritizeEntry.Validate("Quantity (Base)", RestSupplySurplusQty);
         ReprioritizeEntry.Modify();
+        RestSupplySurplusQty := 0;
     end;
 
     local procedure SetMainLocation()

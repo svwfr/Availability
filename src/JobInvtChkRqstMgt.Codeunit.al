@@ -21,8 +21,8 @@ codeunit 50612 "AVLB Job InvtChkRqst Mgt" implements "IFW Job Handler"
     procedure PrepareJob(var IfwRec: Record "IFW Integration"; var IfwLog: Record "IFW Log"; var IfwJob: Record "IFW Job"): Boolean
     begin
         ToolsMgt.RunWithJobQueue(IfwLog);
-        // if not ToolsMgt.RunWithJobQueue(IfwLog) then
-        //     IfwLog.RunLogEntry(true);
+        if not ToolsMgt.RunWithJobQueue(IfwLog) then
+            IfwLog.RunLogEntry(true);
         exit(true);
     end;
 
@@ -84,9 +84,9 @@ codeunit 50612 "AVLB Job InvtChkRqst Mgt" implements "IFW Job Handler"
         RecRef.GetTable(SalesHeader);
         RecRef.Reset();
         RecRef.SetRecFilter();
-        // if ICSetup.Get() and (ICSetup."SCB IC Company Type" = Enum::"SCB IC Company Type"::"Sales Company") then
-        //     IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetICtxt(), false)
-        // else
+        if ICSetup.Get() and (ICSetup."SCB IC Company Type" = Enum::"SCB IC Company Type"::"Sales Company") then
+            IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetICtxt(), false)
+        else
             IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetLocalTxt(), false);
 
         IfwLog.Get(CreatedNo);
@@ -106,9 +106,9 @@ codeunit 50612 "AVLB Job InvtChkRqst Mgt" implements "IFW Job Handler"
         RecRef.GetTable(PurchaseHdr);
         RecRef.Reset();
         RecRef.SetRecFilter();
-        // if ICSetup.Get() and (ICSetup."SCB IC Company Type" = Enum::"SCB IC Company Type"::"Sales Company") then
-        //     IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetICtxt(), false)
-        // else
+        if ICSetup.Get() and (ICSetup."SCB IC Company Type" = Enum::"SCB IC Company Type"::"Sales Company") then
+            IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetICtxt(), false)
+        else
             IfwLog.CreateLogEntry(IfwJob, RecRef, CreatedNo, GetLocalTxt(), false);
         IfwLog.Get(CreatedNo);
 
@@ -326,7 +326,7 @@ codeunit 50612 "AVLB Job InvtChkRqst Mgt" implements "IFW Job Handler"
         if not SalesLn."Drop Shipment" then
             exit(false);
         PurchasingCode.SetRange(Code, SalesLn."Purchasing Code");
-        // PurchasingCode.SetRange("SCB Intercompany", true);
+        PurchasingCode.SetRange("SCB Intercompany", true);
         if PurchasingCode.IsEmpty then
             exit(true);
     end;
