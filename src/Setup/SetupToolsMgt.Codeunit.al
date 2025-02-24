@@ -1,5 +1,5 @@
 namespace Byx.Availability;
-codeunit 50603 "AVLB Availability Tools Mgt"
+codeunit 50603 "AVLB Setup Tools Mgt"
 {
     procedure GetCharsFromString(txtString: Text; txtCharsToKeep: Text) RetVal: Text
     begin

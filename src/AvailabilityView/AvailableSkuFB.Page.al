@@ -1,5 +1,7 @@
 namespace Byx.Availability;
 using Microsoft.Sales.Document;
+using Microsoft.Inventory.Tracking;
+using Microsoft.Inventory.Item;
 
 page 50602 "AVLB Available Sku FB"
 
@@ -11,6 +13,7 @@ page 50602 "AVLB Available Sku FB"
     InsertAllowed = false;
     Editable = false;
     SourceTable = "AVLB Availability Sku";
+    // SourceTableTemporary = true;
 
     layout
     {
@@ -18,7 +21,7 @@ page 50602 "AVLB Available Sku FB"
         {
             repeater(GroupName)
             {
-                field(ItemNo;Rec.ItemNo)
+                field(ItemNo; Rec.ItemNo)
                 {
                     Caption = 'Item';
                     ToolTip = 'Specifies the value of the ItemNo field.', Locked = true;
@@ -39,24 +42,23 @@ page 50602 "AVLB Available Sku FB"
 
     procedure CalculateQty(SalesLn: Record "Sales Line")
     var
-        AVLBQuery: Query "AVLB Calc SKU Qty. Query";
+        AvailQtyDict: Dictionary of [Code[10], decimal];
+        VariantCode: Code[10];
+        SkuQty: Decimal;
     begin
         if not Rec.IsEmpty then
             Rec.DeleteAll();
         if SalesLn.Type <> "Sales Line Type"::Item then
             exit;
-        AVLBQuery.SetFilter(ItemFilter, SalesLn."No.");
-        AVLBQuery.SetFilter(LocationFilter, SalesLn."Location Code");
-        AVLBQuery.SetFilter(ExpRcptDate,'..%1',SalesLn."Shipment Date");
-        AVLBQuery.Open();
-        while AVLBQuery.Read() do begin
-            Rec.ItemNo := AVLBQuery.ItemNo;
-            if AVLBQuery.Variant_Code = '' then
-                Rec.VariantCode := 'N/A'
-            else
-                Rec.VariantCode := AVLBQuery.Variant_Code;
-            Rec.Quantity := AVLBQuery.QuantityBase;
+        AvailQtyDict := AvailMgt.CalcStyleAviliblityQty(SalesLn);
+        foreach VariantCode in AvailQtyDict.Keys do begin
+            Rec.ItemNo := SalesLn."No.";
+            Rec.VariantCode := VariantCode;
+            Rec.Quantity := AvailQtyDict.Get(VariantCode);
             Rec.Insert();
         end;
     end;
+
+    var
+        AvailMgt: Codeunit "AVLB Availability Mgt";
 }

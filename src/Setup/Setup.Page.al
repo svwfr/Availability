@@ -118,7 +118,7 @@ page 50600 "AVLB Availability Setup"
 
                 trigger OnAction()
                 var
-                    ToolsMgt: Codeunit "AVLB Availability Tools Mgt";
+                    ToolsMgt: Codeunit "AVLB Setup Tools Mgt";
                 begin
                     Message(ToolsMgt.GetModuleInfo());
                 end;
