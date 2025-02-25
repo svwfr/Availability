@@ -1,7 +1,6 @@
 namespace Byx.Availability;
 using Microsoft.Inventory.Location;
 using System.Environment.Configuration;
-using Microsoft.Inventory.Item.Catalog;
 using System.Environment;
 using Microsoft.Foundation.Company;
 

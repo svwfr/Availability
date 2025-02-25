@@ -5,6 +5,7 @@ using System.Utilities;
 using Microsoft.Purchases.Document;
 using Microsoft.Intercompany.Setup;
 using Microsoft.Sales.Document;
+using System.Security.User;
 using Microsoft.Foundation.Shipping;
 
 codeunit 50604 "AVLB ErrorInfoAction"
@@ -81,6 +82,7 @@ codeunit 50604 "AVLB ErrorInfoAction"
         IfwLog: Record "IFW Log";
         SalesHdr: Record "Sales Header";
         PurchHdr: Record "Purchase Header";
+        UserSetup: Record "User Setup";
         ConfirmMgt: Codeunit "Confirm Management";
         JsonLine: JsonToken;
         JLines: JsonToken;
@@ -91,7 +93,16 @@ codeunit 50604 "AVLB ErrorInfoAction"
         NothingHappendMsg: label 'The Order is still Open, and you can change the lines to meet your company policy';
         NoOrderToReleaseMsg: Label 'Didn''t find any order to release';
         ForcedByMsg: Label 'Forced by %1', Locked = true;
+        NotAllowedToForceMsg: Label 'You are not authorized to Force this order. Please consult with your supervisor.';
     begin
+        UserSetup.SetRange(ForceAvail, true);
+        if not UserSetup.IsEmpty then begin //if no one has been assigned, then everyone is allowed
+            UserSetup.SetRange("User ID", UserId);
+            if UserSetup.IsEmpty then begin
+                Message(NotAllowedToForceMsg);
+                exit;
+            end;
+        end;
         IfwLog.Get(ErrInfo.RecordId);
         JLines := GetJlinesToken(IfwLog, DocType, OrderNo);
         JLines.AsArray().Get(0, JsonLine);
