@@ -1,7 +1,5 @@
 namespace Byx.Availability;
 using Microsoft.Sales.Document;
-using Microsoft.Inventory.Tracking;
-using Microsoft.Inventory.Item;
 
 page 50602 "AVLB Available Sku FB"
 

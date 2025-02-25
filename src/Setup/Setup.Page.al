@@ -169,6 +169,7 @@ page 50600 "AVLB Availability Setup"
     begin
         CurrentStep := 1;
         InitTemporarySetup();
+        FldCentralWarehouse := IC_Mgt.IsSupplyCompany();
     end;
 
     procedure CompleteSetup()
@@ -309,6 +310,7 @@ page 50600 "AVLB Availability Setup"
 
     var
         SetupMgt: Codeunit "AVLB Setup Mgt";
+        IC_Mgt: Codeunit "AVLB IC Management";
         FldCapableToPromiseFormula: DateFormula;
         FldAutoPostPrintActive: Boolean;
         FldAutoPostPrintAutoPost: Boolean;
