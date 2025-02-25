@@ -7,7 +7,7 @@ using Microsoft.Inventory.Item;
 codeunit 50623 "AVLB Availability Mgt"
 {
 
-    procedure CalcSkuAviliblityQty(SalesLn: Record "Sales Line") AvailabilitySkuQty: Decimal
+    procedure CalcSkuAvilibilityQty(SalesLn: Record "Sales Line") AvailabilitySkuQty: Decimal
     var
         ReservEntry: Record "Reservation Entry";
     begin
@@ -25,7 +25,7 @@ codeunit 50623 "AVLB Availability Mgt"
         AvailabilitySkuQty := ReservEntry."Quantity (Base)";
     end;
 
-    procedure QryCalcSkuAviliblityQty(SalesLn: Record "Sales Line") AvailabilityQty: Decimal
+    procedure QryCalcSkuAvilibilityQty(SalesLn: Record "Sales Line") AvailabilityQty: Decimal
     var
         AvilSkuQtyQuery: Query "AVLB Calc SKU Qty. Query";
     begin
@@ -42,7 +42,7 @@ codeunit 50623 "AVLB Availability Mgt"
         end;
     end;
 
-    procedure CalcStyleAviliblityQty(SalesLn: Record "Sales Line") AvailQtyDict: Dictionary of [Code[10], decimal]
+    procedure CalcStyleAvilibilityQty(SalesLn: Record "Sales Line") AvailQtyDict: Dictionary of [Code[10], decimal]
     var
         ItemVariant: Record "Item Variant";
         ReservEntry: Record "Reservation Entry";
@@ -68,7 +68,7 @@ codeunit 50623 "AVLB Availability Mgt"
             until ItemVariant.Next() = 0;
     end;
 
-    procedure QryCalcStyleAviliblityQty(SalesLn: Record "Sales Line") AvailQtyDict: Dictionary of [Code[10], decimal]
+    procedure QryCalcStyleAvilibilityQty(SalesLn: Record "Sales Line") AvailQtyDict: Dictionary of [Code[10], decimal]
     var
         AvilStyleQtyQuery: Query "AVLB Calc SKU Qty. Query";
     begin

@@ -50,7 +50,7 @@ page 50602 "AVLB Available Sku FB"
             Rec.DeleteAll();
         if SalesLn.Type <> "Sales Line Type"::Item then
             exit;
-        AvailQtyDict := AvailMgt.CalcStyleAviliblityQty(SalesLn);
+        AvailQtyDict := AvailMgt.CalcStyleAvilibilityQty(SalesLn);
         foreach VariantCode in AvailQtyDict.Keys do begin
             Rec.ItemNo := SalesLn."No.";
             Rec.VariantCode := VariantCode;
