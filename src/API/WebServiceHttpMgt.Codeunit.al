@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 
 using System.Security.Authentication;
 

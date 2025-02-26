@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 using Microsoft.Inventory.Tracking;
 codeunit 50611 "AVLB Inventory Match Engine"
 {

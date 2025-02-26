@@ -1,15 +1,15 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 
 table 50600 "AVLB Availability Sku"
 {
     DataClassification = CustomerContent;
-    
+
     fields
     {
-        field(1;ItemNo; Code[20])
+        field(1; ItemNo; Code[20])
         {
             DataClassification = CustomerContent;
-            
+
         }
         field(2; VariantCode; Code[10])
         {
@@ -20,9 +20,9 @@ table 50600 "AVLB Availability Sku"
         {
             DataClassification = CustomerContent;
 
-        } 
+        }
     }
-    
+
     keys
     {
         key(Key1; ItemNo, VariantCode)
@@ -30,30 +30,30 @@ table 50600 "AVLB Availability Sku"
             Clustered = true;
         }
     }
-    
+
     fieldgroups
     {
         // Add changes to field groups here
     }
-    
+
     trigger OnInsert()
     begin
-        
+
     end;
-    
+
     trigger OnModify()
     begin
-        
+
     end;
-    
+
     trigger OnDelete()
     begin
-        
+
     end;
-    
+
     trigger OnRename()
     begin
-        
+
     end;
-    
+
 }

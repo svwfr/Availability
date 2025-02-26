@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Tracking;
@@ -346,7 +346,7 @@ codeunit 50617 "AVLB Reserv Matching Recreate"
     begin
         foreach ItemNo in Item2TrimList do begin
             if TrimReservMgt.RemoveDemand(ItemNo) then begin
-                TrimReservMgt.DefragPositiveSurplus(ItemNo,'');
+                TrimReservMgt.DefragPositiveSurplus(ItemNo, '');
                 TrimReservMgt.ReAddDemand(ItemNo);
                 TrimCount += 1;
             end;

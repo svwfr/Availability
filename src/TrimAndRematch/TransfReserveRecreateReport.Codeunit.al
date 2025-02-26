@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 codeunit 50618 "AVLB Transf-Reserv Report"
 {
     trigger OnRun()

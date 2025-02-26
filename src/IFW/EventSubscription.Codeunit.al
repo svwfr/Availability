@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 
 codeunit 50621 "AVLB IFW Event Subscriptions"
 {

@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 codeunit 50614 "AVLB Json Management"
 {
     procedure TryGetJsonValue(JtokenAsText: Text; TokenKey: Text; var Jvalue: JsonValue): Boolean

@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 using System.Text;
 using Microsoft.Intercompany.Setup;
 using Microsoft.Sales.Document;

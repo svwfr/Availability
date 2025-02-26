@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 
 codeunit 50606 "AVLB Integration Mgt" implements "IFW Integration Handler"
 {

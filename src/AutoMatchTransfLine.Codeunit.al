@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 
 using Microsoft.Inventory.Tracking;
 using Microsoft.Inventory.Item;

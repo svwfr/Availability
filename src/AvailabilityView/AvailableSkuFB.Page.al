@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 using Microsoft.Sales.Document;
 
 page 50602 "AVLB Available Sku FB"

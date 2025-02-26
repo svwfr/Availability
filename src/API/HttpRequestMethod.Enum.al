@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 enum 50600 "AVLB Http Request Method"
 {
     Extensible = true;

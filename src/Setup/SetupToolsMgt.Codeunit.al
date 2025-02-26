@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 codeunit 50603 "AVLB Setup Tools Mgt"
 {
     procedure GetCharsFromString(txtString: Text; txtCharsToKeep: Text) RetVal: Text

@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 using Microsoft.Inventory.Location;
 using System.Environment.Configuration;
 using System.Environment;

@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 codeunit 50607 "AVLB Setup Mgt"
 {
     procedure CreateIntegrationJobs()

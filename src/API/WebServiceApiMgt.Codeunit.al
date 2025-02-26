@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 codeunit 50600 "AVLB WebServiceApi Mgt"
 {
     var

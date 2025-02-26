@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 using Microsoft.Inventory.Item;
 report 50600 "AVLB Trim Reservation Entries"
 {

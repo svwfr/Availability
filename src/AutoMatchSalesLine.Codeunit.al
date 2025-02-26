@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Tracking;
@@ -137,6 +137,7 @@ codeunit 50602 "AVLB Auto Match Sales Line"
     local procedure MatchOverSurplus(DemandReservEntry: Record "Reservation Entry"; SupplyReservEntry: Record "Reservation Entry"; QtyToTrack: Decimal) RestQty: Decimal
     var
         ReservEntry: Record "Reservation Entry";
+        OldReservEntry: Record "Reservation Entry";
     begin
         SupplyReservEntry.Validate("Quantity (Base)", SupplyReservEntry."Quantity (Base)" - QtyToTrack);
         SupplyReservEntry.Modify();
@@ -149,6 +150,11 @@ codeunit 50602 "AVLB Auto Match Sales Line"
         ReservEntry."Creation Date" := Today;
         ReservEntry.Insert();
 
+        if DemandReservEntry."Entry No." <> 0 then begin
+            OldReservEntry := DemandReservEntry;
+            OldReservEntry.Delete();
+        end;
+
         DemandReservEntry."Entry No." := ReservEntry."Entry No.";
         DemandReservEntry."Reservation Status" := "Reservation Status"::Tracking;
         DemandReservEntry.Validate("Quantity (Base)", (-1 * QtyToTrack));
@@ -158,9 +164,27 @@ codeunit 50602 "AVLB Auto Match Sales Line"
     end;
 
     local procedure CreateDemandSurplus(DemandReservEntry: Record "Reservation Entry"; SurplusDemandQty: Decimal)
+    var
+        DemandExistsEntry: Record "Reservation Entry";
+        SupplyEntry: Record "Reservation Entry";
     begin
         if DemandReservEntry."Entry No." <> 0 then
             exit;
+        DemandExistsEntry := DemandReservEntry;
+        DemandExistsEntry.SetPointerFilter();
+
+        DemandExistsEntry.SetBaseLoadFields();
+        if DemandExistsEntry.FindSet() then
+            repeat
+                if DemandExistsEntry."Reservation Status" = "Reservation Status"::Tracking then begin
+                    SupplyEntry.Get(DemandExistsEntry."Entry No.", true);
+                    SupplyEntry."Reservation Status" := "Reservation Status"::Surplus;
+                    SupplyEntry."Shipment Date" := 0D;
+                    SupplyEntry.Modify();
+                end;
+                DemandExistsEntry.Delete();
+            until DemandExistsEntry.Next() = 0;
+
         DemandReservEntry.Positive := false;
         DemandReservEntry."Reservation Status" := "Reservation Status"::Surplus;
         DemandReservEntry.Validate("Quantity (Base)", (-1 * SurplusDemandQty));

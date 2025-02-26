@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 
 using Microsoft.Sales.Document;
 using Microsoft.Inventory.Tracking;
@@ -47,7 +47,7 @@ codeunit 50623 "AVLB Availability Mgt"
         ItemVariant: Record "Item Variant";
         ReservEntry: Record "Reservation Entry";
     begin
-        
+
         if SalesLn.Type <> "Sales Line Type"::Item then
             exit;
         ReservEntry.SetCurrentKey("Item No.", "Variant Code", "Location Code", "Reservation Status", "Shipment Date", "Expected Receipt Date", "Serial No.", "Lot No.", "Package No.");

@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 enumextension 50600 "AVLB IFW Integration Id" extends "IFW Integration Id"
 {
     value(0; "AVAIL")

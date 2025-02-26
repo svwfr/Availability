@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 
 using Microsoft.Sales.Document;
 
@@ -8,7 +8,7 @@ pageextension 50601 "AVLB Sales Order Subform" extends "Sales Order Subform"
     {
         // Add changes to page layout here
     }
-    
+
     actions
     {
         // Add changes to page actions here

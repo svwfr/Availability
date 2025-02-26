@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 using Microsoft.Sales.Document;
 using Microsoft.Purchases.Document;
 using Microsoft.Sales.History;
@@ -35,7 +35,7 @@ codeunit 50605 "AVLB IC Management"
     var
         ICSetup: Record "IC Setup";
     begin
-        ICSetup.SetFilter("SCB IC Company Type",'>=1');
+        ICSetup.SetFilter("SCB IC Company Type", '>=1');
         exit(not ICSetup.IsEmpty);
     end;
 }

@@ -1,4 +1,4 @@
-namespace Byx.Availability;
+namespace Bragda.Availability;
 codeunit 50615 "AVLB Single Instance Mgt"
 {
     SingleInstance = true;
