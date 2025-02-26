@@ -37,7 +37,7 @@ codeunit 50602 "AVLB Auto Match Sales Line"
             exit;
 
         DemandReservEntry.Lock();
-        QtyToTrack := Abs(TotalQty) - QuantityTracked(DemandReservEntry); //skal være 20 og ikkke 21 pga én går mot varepost
+        QtyToTrack := Abs(TotalQty) - QuantityTracked(DemandReservEntry);
 
         if QtyToTrack = 0 then
             exit; //ms code update date will run
@@ -46,17 +46,19 @@ codeunit 50602 "AVLB Auto Match Sales Line"
         Clear(TotalQty);
     end;
 
-    procedure SetTotalQty(NewTotalQty:Decimal)
+    procedure SetTotalQty(NewTotalQty: Decimal)
     begin
-       TotalQty := NewTotalQty; 
+        TotalQty := NewTotalQty;
     end;
 
     local procedure MatchSupply(DemandReservEntry: Record "Reservation Entry"; QtyToTrack: Decimal; var ExitDefaultAutoMatch: Boolean)
     var
         SupplyReservEntry: Record "Reservation Entry";
+        DateForCTP: Date;
         AvailabilityDate: Date;
     begin
         QtyToTrack := Abs(QtyToTrack);
+        DateForCTP := CalcDate(SetupMgt.GetSetupValueAsDateFormula(IfwIds::SetupCapableToPromiseFormula), Today);
         AvailabilityDate := DemandReservEntry."Shipment Date";
         SupplyReservEntry.SetCurrentKey("Reservation Status", "Item No.", "Variant Code", "Location Code", "Expected Receipt Date");
         SupplyReservEntry.SetAscending("Expected Receipt Date", false);
@@ -65,7 +67,10 @@ codeunit 50602 "AVLB Auto Match Sales Line"
         SupplyReservEntry.SetRange("Item No.", DemandReservEntry."Item No.");
         SupplyReservEntry.SetRange("Variant Code", DemandReservEntry."Variant Code");
         SupplyReservEntry.SetRange("Location Code", DemandReservEntry."Location Code");
-        SupplyReservEntry.SetRange("Expected Receipt Date", 0D, AvailabilityDate);
+        if DemandReservEntry."Shipment Date" > DateForCTP then
+            SupplyReservEntry.SetRange("Expected Receipt Date", Today, AvailabilityDate)
+        else
+            SupplyReservEntry.SetRange("Expected Receipt Date", 0D, AvailabilityDate); //includes qty on inventory as well
         SupplyReservEntry.SetBaseLoadFields();
         if SupplyReservEntry.FindSet() then
             repeat
@@ -189,6 +194,8 @@ codeunit 50602 "AVLB Auto Match Sales Line"
     end;
 
     var
+        SetupMgt: Codeunit "AVLB Setup Mgt";
         TotalQty: Decimal;
         MainLocation: Code[10];
+        IfwIds: Enum "AVLB Setup Constants";
 }

@@ -3,25 +3,27 @@ namespace Byx.Availability;
 using Microsoft.Inventory.Tracking;
 using Microsoft.Sales.Document;
 using Microsoft.Inventory.Availability;
+using Microsoft.Inventory.Item;
 
 codeunit 50610 "AVLB Inventory Check Mgt."
 {
-    procedure AlertLackOfInventory(DocType: Text; SalesOrderNo: Code[20]; Location: Code[10]; var IfwLog: Record "IFW Log"): Boolean
+    procedure AlertLackOfInventory(DocType: Text; SalesOrderNo: Code[20]; Location: Code[10]; var IfwLog: Record "IFW Log") AlertUser: Boolean
     var
         ReservEntry: Record "Reservation Entry";
+        Item: Record Item;
         StealEngineMgt: Codeunit "AVLB Steal Engine Mgt.";
         OutDataTxtBldr: TextBuilder;
         LogMessageTxtBldr: TextBuilder;
         ResponsArray: JsonArray;
         SurplusDate: Date;
         QtyNegSurplus: Decimal;
-        AlertUser: Boolean;
         HasUnableHeaderTxt: Boolean;
         DateForCTP: Date;
         SurplusDates: Dictionary of [Date, Decimal];
         ItemFilter: Text;
         UnableToFulfillErr: Label 'Unable to fulfill shipment date expectations:';
     begin
+        AlertUser := false;
         DateForCTP := CalcDate(SetupMgt.GetSetupValueAsDateFormula(IfwIds::SetupCapableToPromiseFormula), Today);
         ReservEntry.SetCurrentKey("Source ID", "Source Ref. No.", "Source Type", "Source Subtype", "Source Batch Name", "Source Prod. Order Line", "Reservation Status", "Shipment Date", "Expected Receipt Date");
         ReservEntry.SetRange("Source ID", SalesOrderNo);
@@ -31,7 +33,7 @@ codeunit 50610 "AVLB Inventory Check Mgt."
         ReservEntry.SetRange("Location Code", Location);
 
         if ReservEntry.IsEmpty then
-            exit(false) //order has been tracked
+            exit(false) //The order has been tracked or is beyond the CTP date.
         else
             if ReservEntry.FindSet() then
                 repeat
@@ -43,10 +45,9 @@ codeunit 50610 "AVLB Inventory Check Mgt."
                     if not StealEngineMgt.AbelToStealStock(ReservEntry, DateForCTP) then begin
                         AlertUser := true;
                         FindNextPostSurplusDate(DateForCTP, Location, ReservEntry."Item No.", QtyNegSurplus, SurplusDates);
-                        if SurplusDates.Count = 0 then begin
-                            SurplusDate := DateForCTP;
-                            PrepareResponse(DocType, SalesOrderNo, ReservEntry."Source Ref. No.", SurplusDate, Abs(QtyNegSurplus), LogMessageTxtBldr, OutDataTxtBldr, ResponsArray, ItemFilter)
-                        end else
+                        if SurplusDates.Count = 0 then
+                            PrepareResponse(DocType, SalesOrderNo, ReservEntry."Source Ref. No.", DateForCTP, Abs(QtyNegSurplus), LogMessageTxtBldr, OutDataTxtBldr, ResponsArray, ItemFilter)
+                        else
                             foreach SurplusDate in SurplusDates.Keys() do
                                 PrepareResponse(DocType, SalesOrderNo, ReservEntry."Source Ref. No.", SurplusDate, SurplusDates.Get(SurplusDate), LogMessageTxtBldr, OutDataTxtBldr, ResponsArray, ItemFilter)
                     end;
